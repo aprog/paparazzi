@@ -8,7 +8,8 @@ var placeSchema = mongoose.Schema({
     	lat: Number,
     	'long': Number
     },
-    ctime: {type: Date, default: Date.now}
+    ctime: {type: Date, default: Date.now},
+    photos: {type: Array, default: []}
 });
 
 mongoose.model('Place', placeSchema);
