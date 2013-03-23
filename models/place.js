@@ -1,10 +1,14 @@
 var mongoose = require('mongoose');
 
 var placeSchema = mongoose.Schema({
-    userId: {type: String, required: true},
-    celebId: {type: String, required: true},
-    ctime: {type: Date, default: Date.now},
-    message: {type: String, default: ''}
+    userId: {type: mongoose.Schema.Types.ObjectId, required: true},
+    celebId: {type: mongoose.Schema.Types.ObjectId, required: true},
+    message: {type: String, default: ''},
+    loc: {
+    	lat: Number,
+    	'long': Number
+    },
+    ctime: {type: Date, default: Date.now}
 });
 
 mongoose.model('Place', placeSchema);

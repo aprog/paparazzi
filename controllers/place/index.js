@@ -5,8 +5,12 @@ exports.create = function(req, res, next) {
     var place = new Place({
         userId: req.body.userId,
         celebId: req.body.celebId,
-        ctime: Date.now(),
-        message: req.body.message
+        message: req.body.message,
+        loc: {
+            lat: req.body.loc.lat,
+            'long': req.body.loc.long
+        },
+        ctime: Date.now()
     });
     place.save(function(err, place) {
         if (err) {
