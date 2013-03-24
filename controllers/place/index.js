@@ -1,7 +1,72 @@
 var mongoose = require('mongoose');
 var Place = mongoose.model('Place');
+var fs = require('fs');
+var format = require('util').format;
+var async = require('async');
+
+function transferFile(file, cb) {
+    var d = new Date();
+    var filePath = 'public/photos/';
+
+    var fileName = format('%d-%d-%d-%s', d.getFullYear(), d.getMonth(), d.getDay(), file.name);
+
+    var is = fs.createReadStream(file.path);
+    var os = fs.createWriteStream(filePath + fileName);
+
+    console.log('Piping file: ' + file.path);
+    is.pipe(os);
+
+    is.on('end', function(err) {
+        console.log('   Finished piping file: ' + file.path);
+        console.log('   Starting unlinking file: ' + file.path);
+        fs.unlink(file.path, function(err) {
+            if (err) {
+                cb(err);
+            }
+            console.log('   File: ' + file.path + ' was successfully unlinked');
+            cb();
+        });
+    });
+}
 
 exports.create = function(req, res, next) {
+    async.each(req.files.photos, transferFile, function(err) {
+        if (err) {
+            throw err;
+        }
+        console.log('All files were successfully processed.');
+        res.send('OK');
+    });
+/*
+    req.files.photos.forEach(function(photo) {
+        var fileName = format('%d-%d-%d-%s', d.getFullYear(), d.getMonth(), d.getDay(), photo.name);
+
+        var is = fs.createReadStream(photo.path);
+        var os = fs.createWriteStream(filePath + fileName);
+        console.log('Piping file: ' + photo.path);
+        is.pipe(os);
+
+        is.on('end', function(err) {
+            if (err) {
+                throw err;
+            }
+            console.log('Finished piping file');
+        });
+
+        console.log('Unlinking file: ' + photo.path);
+        fs.unlink(photo.path, function(err) {
+            var p = photo.path;
+            if (err) {
+                throw err;
+            }
+            console.log('File: ' + p + ' was successfully inlinked.');
+        });
+        uploadedFiles.push(filePath + fileName);
+        console.log(filePath + fileName);
+    });
+    res.send(uploadedFiles);
+*/
+/*
     var place = new Place({
         userId: req.body.userId,
         celebId: req.body.celebId,
@@ -18,6 +83,7 @@ exports.create = function(req, res, next) {
         }
         res.send('Place was successfully created.');
     });
+*/
 }
 
 exports.update = function(req, res, next) {
