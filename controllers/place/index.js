@@ -4,57 +4,58 @@ var fs = require('fs');
 var format = require('util').format;
 var async = require('async');
 
-function transferFile(from, to, cb) {
-    var is = fs.createReadStream(from);
-    var os = fs.createWriteStream(to);
+function transferFile(file, cb) {
+    var d = new Date();
+    var uploadTo = 'public/photos/' + format('%d-%d-%d-%s', d.getFullYear(), d.getMonth(), d.getDay(), file.name);
+    var is = fs.createReadStream(file.path);
+    var os = fs.createWriteStream(uploadTo);
     is.pipe(os);
-    is.on('end', function(err) {
-        fs.unlink(from, function(err) {
+    is.on('end', function() {
+        fs.unlink(file.path, function(err) {
             if (err) {
-                cb(err);
+                return cb(uploadTo, err);
             }
-            cb();
+            cb(uploadTo, null);
         });
     });
 }
 
 exports.create = function(req, res, next) {
     var uploadedFiles = [];
-    var d = new Date();
     var photoFiles = req.files.photos || [];
-    async.each(photoFiles,
-        /* upload each file asynchronously and remember which of them were processed */
-        function(file, cb) {
-            var from = file.path;
-            var filePath = 'public/photos/';
-            var to = filePath + format('%d-%d-%d-%s', d.getFullYear(), d.getMonth(), d.getDay(), file.name);
-            uploadedFiles.push(to);
-            transferFile(from, to, cb);
-        },
-        /* finally create Place object and save it to database */
-        function(err) {
+
+    async.each(photoFiles, function(file, cb) {
+        // upload each file asynchronously and remember which of them were processed
+        transferFile(file, function(result, err) {
             if (err) {
-                throw err;
+                return cb(err);
             }
-            var place = new Place({
-                userId: req.body.userId,
-                celebId: req.body.celebId,
-                message: req.body.message,
-                photos: uploadedFiles,
-                loc: {
-                    lat: req.body.loc.lat,
-                    'long': req.body.loc.long
-                },
-                ctime: Date.now()
-            });
-            place.save(function(err, place) {
-                if (err) {
-                    return res.status(500).send(err.message);
-                }
-                res.send('Place was successfully created.');
-            });
+            uploadedFiles.push(result);
+            cb();
+        });
+    }, function(err) {
+        if (err) {
+            return res.status(500).send(err.message);
         }
-    );
+        // finally create Place object and save it to the database
+        var place = new Place({
+            userId: req.body.userId,
+            celebId: req.body.celebId,
+            message: req.body.message,
+            photos: uploadedFiles,
+            loc: {
+                lat: req.body.loc.lat,
+                'long': req.body.loc.long
+            },
+            ctime: Date.now()
+        });
+        place.save(function(err, place) {
+            if (err) {
+                return res.status(500).send(err.message);
+            }
+            res.send('Place was successfully created.');
+        });
+    });
 }
 
 exports.update = function(req, res, next) {
