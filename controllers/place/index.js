@@ -25,7 +25,9 @@ function transferFile(file, cb) {
 exports.create = function(req, res, next) {
     var uploadedFiles = [];
     var photoFiles = req.files.photos || [];
-
+    if (!(photoFiles instanceof Array)) {
+	photoFiles = [ photoFiles ]
+    }
     async.each(photoFiles, function(file, cb) {
         // upload each file asynchronously and remember which of them were processed
         transferFile(file, function(result, err) {
