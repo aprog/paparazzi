@@ -32,5 +32,10 @@ do
        -F photos=@/home/alex/.bashrc \
        -F photos=@/home/alex/.bash_profile \
        localhost:3000/place
-    echo ""
+    if [ $? -eq 0 ]; then
+        echo "Added place with location:" $lat $long
+    else
+	echo "Can not run curl command"
+    fi
+
 done
