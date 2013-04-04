@@ -3,10 +3,12 @@ var Place = mongoose.model('Place');
 var fs = require('fs');
 var format = require('util').format;
 var async = require('async');
+var crypto = require('crypto');
 
 function transferFile(file, cb) {
     var d = new Date();
-    var uploadTo = 'public/photos/' + format('%d-%d-%d-%s', d.getFullYear(), d.getMonth(), d.getDay(), file.name);
+    var randomString = crypto.createHash('md5').update(Math.random() + '').digest('hex');
+    var uploadTo = 'public/photos/' + format('%d-%d-%d-%s-%s', d.getFullYear(), d.getMonth(), d.getDay(), randomString, file.name);
     var is = fs.createReadStream(file.path);
     var os = fs.createWriteStream(uploadTo);
     is.pipe(os);
