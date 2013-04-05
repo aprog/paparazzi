@@ -1,1 +1,0 @@
-This directory was created for keeping uploaded images.
