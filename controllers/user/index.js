@@ -4,7 +4,7 @@ var User = mongoose.model('User');
 exports.create = function(req, res, next) {
     var user = new User({
         email: req.body.email,
-        password: User.encryptPassword(req.body.password),
+        password: User.encryptPassword(req.body.password)
     });
     user.save(function(err, user) {
         if (err) {
@@ -12,12 +12,12 @@ exports.create = function(req, res, next) {
         }
         res.send('User ' + user.email + ' was successfully created.');
     });
-}
+};
 
 exports.update = function(req, res, next) {
     var userToUpdate = {
         email: req.body.email
-    }
+    };
     if (req.body.password) {
         userToUpdate.password = User.encryptPassword(req.body.password);
     }
@@ -28,7 +28,7 @@ exports.update = function(req, res, next) {
         }
         res.send('User: ' + req.params.user_id + ' was successfully updated. Affected: ' + numAffected);
     });
-}
+};
 
 exports.list = function(req, res, next) {
     User.find({}, function(err, users) {
@@ -37,7 +37,7 @@ exports.list = function(req, res, next) {
         }
         res.send(users);
     });
-}
+};
 
 exports.show = function(req, res, next) {
     User.findOne({_id: req.params.user_id}, function(err, user) {
@@ -46,4 +46,4 @@ exports.show = function(req, res, next) {
         }
         res.send(user);
     });
-}
+};

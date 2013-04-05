@@ -13,7 +13,7 @@ exports.create = function(req, res, next) {
         }
         res.send('Celebrity: ' + celeb.name + ' was successfully created.');
     });
-}
+};
 
 exports.update = function(req, res, next) {
     Celeb.update({
@@ -28,7 +28,7 @@ exports.update = function(req, res, next) {
         }
         res.send('Celebrity: ' + req.params.celeb_id + ' was successfully updated. Affected: ' + numAffected);
     });
-}
+};
 
 exports.list = function(req, res, next) {
     Celeb.find({}, function(err, celebs) {
@@ -37,7 +37,7 @@ exports.list = function(req, res, next) {
         }
         res.send(celebs);
     });
-}
+};
 
 exports.show = function(req, res, next) {
     Celeb.findOne({_id: req.params.celeb_id}, function(err, celeb) {
@@ -46,4 +46,4 @@ exports.show = function(req, res, next) {
         }
         res. send(celeb);
     });
-}
+};

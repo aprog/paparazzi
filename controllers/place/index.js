@@ -26,7 +26,7 @@ exports.create = function(req, res, next) {
     var uploadedFiles = [];
     var photoFiles = req.files.photos || [];
     if (!(photoFiles instanceof Array)) {
-        photoFiles = [ photoFiles ]
+        photoFiles = [ photoFiles ];
     }
     async.each(photoFiles, function(file, cb) {
         // upload each file asynchronously and remember which of them were processed
@@ -60,13 +60,13 @@ exports.create = function(req, res, next) {
             res.send('Place was successfully created.');
         });
     });
-}
+};
 
 exports.update = function(req, res, next) {
     var placeToUpdate = {
         userId: req.body.userId,
         celebId: req.body.celebId
-    }
+    };
     if (req.body.message) {
         placeToUpdate.message = req.body.message;
     }
@@ -76,7 +76,7 @@ exports.update = function(req, res, next) {
         }
         res.send('Place: ' + req.params.place_id + ' was successfully updated. Affected: ' + numAffected);
     });
-}
+};
 
 exports.list = function(req, res, next) {
     Place.find({}).sort({'ctime': -1}).exec(function(err, places) {
@@ -85,10 +85,10 @@ exports.list = function(req, res, next) {
         }
         res.send(places);
     });
-}
+};
 
 exports.show = function(req, res, next) {
     Place.findOne({_id: req.params.place_id}, function(err, place) {
         res.send(place);
     });
-}
+};

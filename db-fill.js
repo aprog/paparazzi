@@ -17,7 +17,7 @@ var placeSchema = mongoose.Schema({
 		lat: Number,
 		"long": Number
 	},
-	ctime: {type: Date, default: Date.now}
+	ctime: {type: Date, 'default': Date.now}
 });
 
 var celebSchema = mongoose.Schema({
