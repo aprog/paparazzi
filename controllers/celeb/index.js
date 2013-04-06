@@ -1,7 +1,15 @@
 var mongoose = require('mongoose');
 var Celeb = mongoose.model('Celeb');
+var prefix = '/celeb';
 
-exports.create = function(req, res, next) {
+module.exports = function(app, options) {
+    app.post(prefix + '/create', createCeleb);
+    app.put(prefix + '/update/:place_id', updateCeleb);
+    app.get(prefix + '/list', listCelebs);
+    app.get(prefix + '/show/:place_id', showCeleb);
+};
+
+function createCeleb(req, res) {
     var celeb = new Celeb({
         name: req.body.name,
         about: req.body.about
@@ -13,9 +21,9 @@ exports.create = function(req, res, next) {
         }
         res.send('Celebrity: ' + celeb.name + ' was successfully created.');
     });
-};
+}
 
-exports.update = function(req, res, next) {
+function updateCeleb(req, res) {
     Celeb.update({
         _id: req.params.celeb_id
     },
@@ -28,22 +36,22 @@ exports.update = function(req, res, next) {
         }
         res.send('Celebrity: ' + req.params.celeb_id + ' was successfully updated. Affected: ' + numAffected);
     });
-};
+}
 
-exports.list = function(req, res, next) {
+function listCelebs(req, res, next) {
     Celeb.find({}, function(err, celebs) {
         if (err) {
             throw err;
         }
         res.send(celebs);
     });
-};
+}
 
-exports.show = function(req, res, next) {
+function showCeleb(req, res, next) {
     Celeb.findOne({_id: req.params.celeb_id}, function(err, celeb) {
         if (err) {
             throw err;
         }
         res. send(celeb);
     });
-};
+}

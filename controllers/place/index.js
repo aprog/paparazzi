@@ -4,6 +4,14 @@ var fs = require('fs');
 var format = require('util').format;
 var async = require('async');
 var crypto = require('crypto');
+var prefix = '/place';
+
+module.exports = function(app, options) {
+    app.post(prefix + '/create', createPlace);
+    app.put(prefix + '/update/:place_id', updatePlace);
+    app.get(prefix + '/list', listPlaces);
+    app.get(prefix + '/show/:place_id', showPlace);
+};
 
 function transferFile(file, cb) {
     var d = new Date();
@@ -22,7 +30,7 @@ function transferFile(file, cb) {
     });
 }
 
-exports.create = function(req, res, next) {
+function createPlace(req, res) {
     var uploadedFiles = [];
     var photoFiles = req.files.photos || [];
     if (!(photoFiles instanceof Array)) {
@@ -60,9 +68,9 @@ exports.create = function(req, res, next) {
             res.send('Place was successfully created.');
         });
     });
-};
+}
 
-exports.update = function(req, res, next) {
+function updatePlace(req, res) {
     var placeToUpdate = {
         userId: req.body.userId,
         celebId: req.body.celebId
@@ -76,19 +84,19 @@ exports.update = function(req, res, next) {
         }
         res.send('Place: ' + req.params.place_id + ' was successfully updated. Affected: ' + numAffected);
     });
-};
+}
 
-exports.list = function(req, res, next) {
-    Place.find({}).sort({'ctime': -1}).exec(function(err, places) {
+function listPlaces(req, res) {
+    Place.find({}).sort({'ctime': -1}).limit(100).exec(function(err, places) {
         if (err) {
             throw err;
         }
         res.send(places);
     });
-};
+}
 
-exports.show = function(req, res, next) {
+function showPlace(req, res, next) {
     Place.findOne({_id: req.params.place_id}, function(err, place) {
         res.send(place);
     });
-};
+}

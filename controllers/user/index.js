@@ -1,7 +1,15 @@
 var mongoose = require('mongoose');
 var User = mongoose.model('User');
+var prefix = '/user';
 
-exports.create = function(req, res, next) {
+module.exports = function(app, options) {
+    app.post(prefix + '/create', createUser);
+    app.put(prefix + '/update/:user_id', updateUser);
+    app.get(prefix + '/list', listUsers);
+    app.get(prefix + '/show/:user_id', showUser);
+};
+
+function createUser(req, res) {
     var user = new User({
         email: req.body.email,
         password: User.encryptPassword(req.body.password)
@@ -12,9 +20,9 @@ exports.create = function(req, res, next) {
         }
         res.send('User ' + user.email + ' was successfully created.');
     });
-};
+}
 
-exports.update = function(req, res, next) {
+function updateUser(req, res) {
     var userToUpdate = {
         email: req.body.email
     };
@@ -28,22 +36,22 @@ exports.update = function(req, res, next) {
         }
         res.send('User: ' + req.params.user_id + ' was successfully updated. Affected: ' + numAffected);
     });
-};
+}
 
-exports.list = function(req, res, next) {
+function listUsers(req, res) {
     User.find({}, function(err, users) {
         if (err) {
             throw err;
         }
         res.send(users);
     });
-};
+}
 
-exports.show = function(req, res, next) {
+function showUser(req, res) {
     User.findOne({_id: req.params.user_id}, function(err, user) {
         if (err) {
             throw err;
         }
         res.send(user);
     });
-};
+}
