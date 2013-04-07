@@ -3,10 +3,12 @@ var User = mongoose.model('User');
 var prefix = '/user';
 
 module.exports = function(app, options) {
-    app.post(prefix + '/create', createUser);
+    app.post(prefix, createUser);
     app.put(prefix + '/update/:user_id', updateUser);
     app.get(prefix + '/list', listUsers);
     app.get(prefix + '/show/:user_id', showUser);
+    app.post(prefix + '/authenticate', authenticateUser);
+    app.get(prefix + '/logout', logoutUser);
 };
 
 function createUser(req, res) {
@@ -18,7 +20,7 @@ function createUser(req, res) {
         if (err) {
             return res.status(500).send(err.message);
         }
-        res.send('User ' + user.email + ' was successfully created.');
+        res.send('User ' + user.email + ' was successfully created');
     });
 }
 
@@ -53,5 +55,23 @@ function showUser(req, res) {
             throw err;
         }
         res.send(user);
+    });
+}
+
+function authenticateUser(req, res) {
+    User.authenticate(req.body.email, req.body.password, function(err, user) {
+        if (err) {
+            return res.status(404).send(err.message);
+        }
+        res.send(user.authToken);
+    });
+}
+
+function logoutUser(req, res) {
+    User.logout(req.body.authToken, function(err, isLogouted) {
+        if (err) {
+            throw err;
+        }
+        res.send('Logout status: ' + isLogouted);
     });
 }

@@ -4,7 +4,6 @@ var app = express();
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/paparazzi');
 
-
 app.set('views', __dirname + '/views');
 app.use(express.logger('dev'));
 app.use(express.static(__dirname + '/public'));

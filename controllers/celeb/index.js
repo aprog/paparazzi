@@ -3,7 +3,7 @@ var Celeb = mongoose.model('Celeb');
 var prefix = '/celeb';
 
 module.exports = function(app, options) {
-    app.post(prefix + '/create', createCeleb);
+    app.post(prefix, createCeleb);
     app.put(prefix + '/update/:place_id', updateCeleb);
     app.get(prefix + '/list', listCelebs);
     app.get(prefix + '/show/:place_id', showCeleb);

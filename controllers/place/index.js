@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var Place = mongoose.model('Place');
+var User = mongoose.model('User');
 var fs = require('fs');
 var format = require('util').format;
 var async = require('async');
@@ -7,8 +8,8 @@ var crypto = require('crypto');
 var prefix = '/place';
 
 module.exports = function(app, options) {
-    app.post(prefix + '/create', createPlace);
-    app.put(prefix + '/update/:place_id', updatePlace);
+    app.post(prefix, /*User.ensureAuthenticated,*/ createPlace);
+    app.put(prefix + '/update/:place_id', User.ensureAuthenticated, updatePlace);
     app.get(prefix + '/list', listPlaces);
     app.get(prefix + '/show/:place_id', showPlace);
 };
