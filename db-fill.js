@@ -6,7 +6,7 @@ var crypto = require('crypto');
 var userSchema = mongoose.Schema({
 	email: String,
 	password: String,
-	token: String
+	authToken: String
 });
 
 var placeSchema = mongoose.Schema({
@@ -39,7 +39,7 @@ function generateUsers() {
 		var user = new User({
 			email: name.toLowerCase() + '@localhost',
 			password: crypto.createHash('sha256').update(name.toLowerCase(), 'utf8').digest('hex'),
-			token: ''
+			authToken: crypto.createHash('sha256').update(Math.random() + '').digest('hex')
 		});
 		user.save(function(err, savedUser) {
 			if (err) {
