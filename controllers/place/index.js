@@ -8,8 +8,10 @@ var crypto = require('crypto');
 var prefix = '/place';
 
 module.exports = function(app, options) {
-    app.post(prefix, /*User.ensureAuthenticated,*/ createPlace);
-    app.put(prefix + '/update/:place_id', User.ensureAuthenticated, updatePlace);
+    app.all(prefix, User.populateSession);
+
+    app.post(prefix, User.requireRole('admin'), createPlace);
+    app.put(prefix + '/update/:place_id', User.requireRole('admin'), updatePlace);
     app.get(prefix + '/list', listPlaces);
     app.get(prefix + '/show/:place_id', showPlace);
 };
