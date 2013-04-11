@@ -27,27 +27,40 @@ userSchema.statics.authenticate = function(email, rawPassword, cb) {
 	});
 };
 
-userSchema.statics.ensureAuthenticated = function(req, res, next) {
-	if (!req.body.authToken) {
-		return next(new Error('User is not authenticated'));
-	}
-	mongoose.model('User').findOne({authToken: req.body.authToken}, function(err, user) {
-		if (err) {
-			return next(err);
-		}
-		if (!user) {
-			return next(new Error('User is not authenticated'));
-		}
-		next();
-	});
-};
-
 userSchema.statics.logout = function(authToken, cb) {
 	if (!authToken) {
 		return cb(new Error('Empty auth token'));
 	}
 	var newToken = this.generateToken();
 	this.update({authToken: authToken}, {$set: {authToken: newToken}}, {multi: false}, cb);
+};
+
+userSchema.statics.populateSession = function(req, res, next) {
+	if (!req.body.authToken) {
+		return next('Auth token is empty');
+	}
+	mongoose.model('User').findOne({authToken: req.body.authToken}, function(err, user) {
+		if (err) {
+			return next(err);
+		}
+		if (!user) {
+			return next('User with specified auth token was not found');
+		}
+		req.session.user = user;
+		next();
+	});
+};
+
+userSchema.statics.requireRole = function(role) {
+	return function(req, res, next) {
+		var userRoles = req.session.user.roles || [];
+		for (var i = 0; i < userRoles.length; i++) {
+			if (userRoles[i] === role) {
+				return next();
+			}
+		}
+		next('Authentication required');
+	};
 };
 
 mongoose.model('User', userSchema);
