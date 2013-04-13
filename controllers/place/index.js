@@ -11,7 +11,7 @@ module.exports = function(app, options) {
     app.all(prefix, User.populateSession);
 
     app.post(prefix, User.requireRole('admin'), createPlace);
-    app.put(prefix + '/update/:place_id', User.requireRole('admin'), updatePlace);
+    app.put(prefix + '/:place_id', User.requireRole('admin'), updatePlace);
     app.get(prefix + '/list', listPlaces);
     app.get(prefix + '/show/:place_id', showPlace);
 };

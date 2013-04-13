@@ -1,12 +1,13 @@
 var mongoose = require('mongoose');
 var Celeb = mongoose.model('Celeb');
+var User = mongoose.model('User');
 var prefix = '/celeb';
 
 module.exports = function(app, options) {
-    app.post(prefix, createCeleb);
-    app.put(prefix + '/update/:place_id', updateCeleb);
+    app.post(prefix, User.populateSession, User.requireRole('admin'), createCeleb);
+    app.put(prefix + '/:celeb_id', User.populateSession, User.requireRole('admin'), updateCeleb);
     app.get(prefix + '/list', listCelebs);
-    app.get(prefix + '/show/:place_id', showCeleb);
+    app.get(prefix + '/show/:celeb_id', showCeleb);
 };
 
 function createCeleb(req, res) {
@@ -24,13 +25,13 @@ function createCeleb(req, res) {
 }
 
 function updateCeleb(req, res) {
-    Celeb.update({
-        _id: req.params.celeb_id
-    },
-    {
-        name: req.body.name,
-        about: req.body.about
-    }, function(err, numAffected) {
+    var celebFields = {};
+
+    for (var field in req.body) {
+        celebFields[field] = req.body[field];
+    }
+
+    Celeb.update({_id: req.params.celeb_id}, celebFields, function(err, numAffected) {
         if (err) {
             return res.status(500).send('Can not update celebrity: ' + req.params.celeb_id + ': ' + err.message);
         }

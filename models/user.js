@@ -4,7 +4,8 @@ var crypto = require('crypto');
 var userSchema = mongoose.Schema({
     email: {type: String, required: true},
     password: {type: String, required: true},
-    authToken: {type: String, 'default': generateToken}
+    authToken: {type: String, 'default': generateToken},
+    roles: {type: Array, 'default': []}
 });
 
 userSchema.statics.encryptPassword = function(rawPassword) {
@@ -12,20 +13,6 @@ userSchema.statics.encryptPassword = function(rawPassword) {
 };
 
 userSchema.statics.generateToken = generateToken;
-
-userSchema.statics.authenticate = function(email, rawPassword, cb) {
-	var password = this.encryptPassword(rawPassword);
-	var self = this;
-	this.findOne({email: email, password: password}, function(err, user) {
-		if (err) {
-			return cb(err);
-		}
-		if (!user) {
-			return cb(new Error('User with email: ' + email + ' and specified password was not found'));
-		}
-		cb(null, user);
-	});
-};
 
 userSchema.statics.logout = function(authToken, cb) {
 	if (!authToken) {
@@ -59,7 +46,7 @@ userSchema.statics.requireRole = function(role) {
 				return next();
 			}
 		}
-		next('Authentication required');
+		next('User do not have permission to do required operation');
 	};
 };
 

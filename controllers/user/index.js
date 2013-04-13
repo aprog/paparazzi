@@ -3,19 +3,31 @@ var User = mongoose.model('User');
 var prefix = '/user';
 
 module.exports = function(app, options) {
-    app.post(prefix, createUser);
-    app.put(prefix + '/update/:user_id', updateUser);
+    app.post(prefix, User.populateSession, User.requireRole('admin'), createUser);
+    app.put(prefix + '/:user_id', User.populateSession, User.requireRole('admin'), updateUser);
     app.get(prefix + '/list', listUsers);
     app.get(prefix + '/show/:user_id', showUser);
-    app.post(prefix + '/authenticate', authenticateUser);
-    app.get(prefix + '/logout', logoutUser);
+    app.get(prefix + '/getToken', getToken);
+    app.post(prefix + '/logout', logoutUser);
 };
 
 function createUser(req, res) {
-    var user = new User({
-        email: req.body.email,
-        password: User.encryptPassword(req.body.password)
-    });
+    var userFields = {};
+
+    // Loop through all fields that came in body.
+    // If there will be unspecified fields - they will
+    // not be added to the database, because they
+    // are not described in mongoose scheme.
+    for (var field in req.body) {
+        userFields[field] = req.body[field];
+    }
+
+    if (userFields.password) {
+        userFields.password = User.encryptPassword(userFields.password);
+    }
+
+    var user = new User(userFields);
+
     user.save(function(err, user) {
         if (err) {
             return res.status(500).send(err.message);
@@ -25,14 +37,22 @@ function createUser(req, res) {
 }
 
 function updateUser(req, res) {
-    var userToUpdate = {
-        email: req.body.email
-    };
-    if (req.body.password) {
-        userToUpdate.password = User.encryptPassword(req.body.password);
+    var userFields = {};
+
+    for (var field in req.body) {
+        userFields[field] = req.body[field];
     }
 
-    User.update({_id: req.params.user_id}, userToUpdate, {upsert: false, multi: false}, function(err, numAffected) {
+    if (userFields.password) {
+        userFields.password = User.encryptPassword(userFields.password);
+    }
+
+    // be aware, that Object.update does not run Scheme validators
+    if (userFields.roles && !(userFields.roles instanceof Array)) {
+        userFields.roles = [ userFields.roles ];
+    }
+
+    User.update({_id: req.params.user_id}, userFields, {upsert: false, multi: false}, function(err, numAffected) {
         if (err) {
             return res.status(500).send('Can not update user: ' + req.params.user_id + ': ' + err.message);
         }
@@ -58,10 +78,14 @@ function showUser(req, res) {
     });
 }
 
-function authenticateUser(req, res) {
-    User.authenticate(req.body.email, req.body.password, function(err, user) {
+function getToken(req, res) {
+    var hashedPassword = User.encryptPassword(req.body.password);
+    User.findOne({email: req.body.email, password: hashedPassword}, function(err, user) {
         if (err) {
-            return res.status(404).send(err.message);
+            throw err;
+        }
+        if (!user) {
+            return res.status(404).send('User with email: ' + req.body.email + ' and specified password was not found');
         }
         res.send(user.authToken);
     });
