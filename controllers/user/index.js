@@ -61,7 +61,7 @@ function updateUser(req, res) {
 }
 
 function listUsers(req, res) {
-    User.find({}, function(err, users) {
+    User.find({}).limit(100).exec(function(err, users) {
         if (err) {
             throw err;
         }

@@ -31,7 +31,7 @@ function updateCeleb(req, res) {
         celebFields[field] = req.body[field];
     }
 
-    Celeb.update({_id: req.params.celeb_id}, celebFields, function(err, numAffected) {
+    Celeb.update({_id: req.params.celeb_id}, celebFields, {upsert: false, multi: false}, function(err, numAffected) {
         if (err) {
             return res.status(500).send('Can not update celebrity: ' + req.params.celeb_id + ': ' + err.message);
         }
@@ -40,7 +40,7 @@ function updateCeleb(req, res) {
 }
 
 function listCelebs(req, res, next) {
-    Celeb.find({}, function(err, celebs) {
+    Celeb.find({}).limit(100).exec(function(err, celebs) {
         if (err) {
             throw err;
         }
