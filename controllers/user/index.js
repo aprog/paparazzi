@@ -6,7 +6,7 @@ module.exports = function(app, options) {
     app.post(prefix, User.populateSession, User.requireRole('admin'), createUser);
     app.put(prefix + '/:user_id', User.populateSession, User.requireRole('admin'), updateUser);
     app.get(prefix + '/list', listUsers);
-    app.get(prefix + '/show/:user_id', showUser);
+    app.get(prefix + '/:user_id', showUser);
     app.get(prefix + '/getToken', getToken);
     app.post(prefix + '/logout', logoutUser);
 };
@@ -79,6 +79,9 @@ function showUser(req, res) {
 }
 
 function getToken(req, res) {
+    if (!req.body.email || !req.body.password) {
+        return res.status(404).send('Email and password are required');
+    }
     var hashedPassword = User.encryptPassword(req.body.password);
     User.findOne({email: req.body.email, password: hashedPassword}, function(err, user) {
         if (err) {

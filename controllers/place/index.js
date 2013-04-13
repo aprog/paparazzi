@@ -13,7 +13,7 @@ module.exports = function(app, options) {
     app.post(prefix, User.requireRole('admin'), createPlace);
     app.put(prefix + '/:place_id', User.requireRole('admin'), updatePlace);
     app.get(prefix + '/list', listPlaces);
-    app.get(prefix + '/show/:place_id', showPlace);
+    app.get(prefix + '/:place_id', showPlace);
 };
 
 function transferFile(file, cb) {

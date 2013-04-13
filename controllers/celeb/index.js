@@ -7,7 +7,7 @@ module.exports = function(app, options) {
     app.post(prefix, User.populateSession, User.requireRole('admin'), createCeleb);
     app.put(prefix + '/:celeb_id', User.populateSession, User.requireRole('admin'), updateCeleb);
     app.get(prefix + '/list', listCelebs);
-    app.get(prefix + '/show/:celeb_id', showCeleb);
+    app.get(prefix + '/:celeb_id', showCeleb);
 };
 
 function createCeleb(req, res) {
