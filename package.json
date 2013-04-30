@@ -8,7 +8,9 @@
     "express": "~3.1.0",
     "jade": "~0.28.2",
     "async": "~0.2.6",
-    "mocha": "~1.9.0"
+    "mocha": "~1.9.0",
+    "should": "~1.2.2",
+    "request": "~2.20.0"
   },
   "devDependencies": {},
   "scripts": {
