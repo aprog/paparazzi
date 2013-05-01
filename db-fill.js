@@ -6,7 +6,8 @@ var crypto = require('crypto');
 var userSchema = mongoose.Schema({
 	email: String,
 	password: String,
-	authToken: String
+	token: String,
+    roles: {type: Array, 'default': []}
 });
 
 var placeSchema = mongoose.Schema({
@@ -39,7 +40,7 @@ function generateUsers() {
 		var user = new User({
 			email: name.toLowerCase() + '@localhost',
 			password: crypto.createHash('sha256').update(name.toLowerCase(), 'utf8').digest('hex'),
-			authToken: crypto.createHash('sha256').update(Math.random() + '').digest('hex')
+			token: crypto.createHash('sha256').update(Math.random() + '').digest('hex')
 		});
 		user.save(function(err, savedUser) {
 			if (err) {
@@ -47,6 +48,20 @@ function generateUsers() {
 			}
 			console.log('User ' + savedUser.email + ' was successfully saved');
 		});
+	});
+	// generate user with admin role
+	var user = new User({
+		email: 'alex@localhost.localdomain',
+		password: crypto.createHash('sha256').update('alex', 'utf8').digest('hex'),
+		token: crypto.createHash('sha256').update(Math.random() + '').digest('hex'),
+		roles: ['admin'],
+		_id: '00000000000000000000aaee'
+	});
+	user.save(function(err, savedUser) {
+		if (err) {
+			throw err;
+		}
+		console.log('User ' + savedUser.email + ' was successfully saved');
 	});
 }
 
