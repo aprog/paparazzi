@@ -4,7 +4,7 @@ var crypto = require('crypto');
 var userSchema = mongoose.Schema({
     email: {type: String, required: true},
     password: {type: String, required: true},
-    authToken: {type: String, 'default': generateToken},
+    token: {type: String, 'default': generateToken},
     roles: {type: Array, 'default': []}
 });
 
@@ -19,14 +19,14 @@ userSchema.statics.logout = function(authToken, cb) {
 		return cb(new Error('Empty auth token'));
 	}
 	var newToken = this.generateToken();
-	this.update({authToken: authToken}, {$set: {authToken: newToken}}, {multi: false}, cb);
+	this.update({token: authToken}, {$set: {token: newToken}}, {multi: false}, cb);
 };
 
 userSchema.statics.populateSession = function(req, res, next) {
 	if (!req.body.authToken) {
-		return next('Auth token is empty');
+		return next('Can not populate session: auth token is empty');
 	}
-	mongoose.model('User').findOne({authToken: req.body.authToken}, function(err, user) {
+	mongoose.model('User').findOne({token: req.body.authToken}, function(err, user) {
 		if (err) {
 			return next(err);
 		}

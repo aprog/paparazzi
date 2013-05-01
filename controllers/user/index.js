@@ -2,15 +2,6 @@ var mongoose = require('mongoose');
 var User = mongoose.model('User');
 var prefix = '/user';
 
-module.exports = function(app, options) {
-    app.post(prefix, User.populateSession, User.requireRole('admin'), createUser);
-    app.put(prefix + '/:user_id', User.populateSession, User.requireRole('admin'), updateUser);
-    app.get(prefix + '/list', listUsers);
-    app.get(prefix + '/:user_id', showUser);
-    app.get(prefix + '/getToken', getToken);
-    app.post(prefix + '/logout', logoutUser);
-};
-
 function createUser(req, res) {
     var userFields = {};
 
@@ -21,7 +12,6 @@ function createUser(req, res) {
     for (var field in req.body) {
         userFields[field] = req.body[field];
     }
-
     if (userFields.password) {
         userFields.password = User.encryptPassword(userFields.password);
     }
@@ -32,7 +22,7 @@ function createUser(req, res) {
         if (err) {
             return res.status(500).send(err.message);
         }
-        res.send('User ' + user.email + ' was successfully created');
+        res.send({userId: user._id});
     });
 }
 
@@ -52,11 +42,11 @@ function updateUser(req, res) {
         userFields.roles = [ userFields.roles ];
     }
 
-    User.update({_id: req.params.user_id}, userFields, {upsert: false, multi: false}, function(err, numAffected) {
+    User.update({_id: req.params.userId}, userFields, {upsert: false, multi: false}, function(err, numAffected) {
         if (err) {
-            return res.status(500).send('Can not update user: ' + req.params.user_id + ': ' + err.message);
+            return res.status(500).send('Can not update user: ' + req.params.userId + ': ' + err.message);
         }
-        res.send('User: ' + req.params.user_id + ' was successfully updated. Affected: ' + numAffected);
+        res.send('User: ' + req.params.userId + ' was successfully updated. Affected: ' + numAffected);
     });
 }
 
@@ -70,9 +60,12 @@ function listUsers(req, res) {
 }
 
 function showUser(req, res) {
-    User.findOne({_id: req.params.user_id}, function(err, user) {
+    User.findOne({_id: req.params.userId}, function(err, user) {
         if (err) {
             throw err;
+        }
+        if (!user) {
+            return res.status(404).send('User with id: ' + req.params.userId + ' was not found');
         }
         res.send(user);
     });
@@ -102,3 +95,12 @@ function logoutUser(req, res) {
         res.send('Logout status: ' + isLogouted);
     });
 }
+
+module.exports = function(app) {
+    app.post(prefix, User.populateSession, User.requireRole('admin'), createUser);
+    app.put(prefix + '/:userId', User.populateSession, User.requireRole('admin'), updateUser);
+    app.get(prefix + '/list', listUsers);
+    app.get(prefix + '/:userId', showUser);
+    app.get(prefix + '/getToken', getToken);
+    app.post(prefix + '/logout', logoutUser);
+};
