@@ -46,7 +46,10 @@ function showCeleb(req, res) {
         if (err) {
             throw err;
         }
-        res. send(celeb);
+        if (!celeb) {
+            return res.status(404).send('Celebrity with id: ' + req.params.celebId + ' was not found');
+        }
+        res.send(celeb);
     });
 }
 
