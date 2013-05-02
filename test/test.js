@@ -31,7 +31,7 @@ describe('Privileged user', function() {
     });
 });
 
-describe('User', function() {
+describe.skip('User', function() {
     describe('#list()', function() {
         it('should retrieve list of users without error', function(done) {
             request('http://localhost:3000/user/list', function(error, response, body) {
@@ -78,6 +78,7 @@ describe('User', function() {
             });
         });
     });
+
     describe('#get()', function() {
         it('should retrieve newly created user', function(done) {
             request('http://localhost:3000/user/' + newUserResponse.userId, function(e, r, body) {
@@ -179,15 +180,7 @@ describe('User', function() {
 });
 
 
-
-
-
-
-
-
-
-
-describe.skip('Celebrity', function() {
+describe('Celebrity', function() {
     describe('#list()', function() {
         it('should retrieve list of celebrities', function(done) {
             request('http://localhost:3000/celeb/list', function(e, r, body) {
@@ -223,6 +216,9 @@ describe.skip('Celebrity', function() {
                 done();
             });
         });
+    });
+
+    describe('#get()', function() {
         it('should retrieve newly created celebrity', function(done) {
             request('http://localhost:3000/celeb/' + newCelebResponse.celebId, function(e, r, body) {
                 r.statusCode.should.equal(200);
@@ -236,6 +232,34 @@ describe.skip('Celebrity', function() {
             });
         });
     });
+
+    describe('#update()', function() {
+        it('should update celebrity with specified id', function(done) {
+            request.put('http://localhost:3000/celeb/' + newCelebResponse.celebId, {
+                form: {
+                    authToken: privilegedUser.token,
+                    name: 'newNameOfCelebrity',
+                    about: 'new about text'
+                }
+            }, function(e, r) {
+                r.statusCode.should.equal(200);
+                done();
+            });
+        });
+        it('should retrieve updated celebrity', function(done) {
+            request('http://localhost:3000/celeb/' + newCelebResponse.celebId, function(e, r, body) {
+                r.statusCode.should.equal(200);
+                body.should.not.be.empty;
+                var updatedCelebrity = JSON.parse(body);
+                updatedCelebrity.should.have.property('name');
+                updatedCelebrity.name.should.equal('newNameOfCelebrity');
+                updatedCelebrity.should.have.property('about');
+                updatedCelebrity.about.should.equal('new about text');
+                done();
+            });
+        });
+    });
+
     describe('#remove()', function() {
         it('should remove celebrity with specified id', function(done) {
             request.del('http://localhost:3000/celeb/' + newCelebResponse.celebId, {
@@ -248,7 +272,7 @@ describe.skip('Celebrity', function() {
             });
         });
         it('should not retrieve deleted celebrity', function(done) {
-            request('http://localhost:3000/user/' + newCelebResponse.celebId, function(e, r) {
+            request('http://localhost:3000/celeb/' + newCelebResponse.celebId, function(e, r) {
                 r.statusCode.should.equal(404);
                 done();
             });
@@ -283,6 +307,7 @@ describe.skip('Celebrity', function() {
             });
         });
     });
+
     describe('#remove() celebrity with empty about field', function() {
         it('should remove celebrity with specified id', function(done) {
             request.del('http://localhost:3000/celeb/' + newCelebResponse.celebId, {
@@ -295,11 +320,10 @@ describe.skip('Celebrity', function() {
             });
         });
         it('should not retrieve deleted celebrity', function(done) {
-            request('http://localhost:3000/user/' + newCelebResponse.celebId, function(e, r) {
+            request('http://localhost:3000/celeb/' + newCelebResponse.celebId, function(e, r) {
                 r.statusCode.should.equal(404);
                 done();
             });
         });
     });
-
 });
