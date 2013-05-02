@@ -3,13 +3,6 @@ var Celeb = mongoose.model('Celeb');
 var User = mongoose.model('User');
 var prefix = '/celeb';
 
-module.exports = function(app, options) {
-    app.post(prefix, User.populateSession, User.requireRole('admin'), createCeleb);
-    app.put(prefix + '/:celeb_id', User.populateSession, User.requireRole('admin'), updateCeleb);
-    app.get(prefix + '/list', listCelebs);
-    app.get(prefix + '/:celeb_id', showCeleb);
-};
-
 function createCeleb(req, res) {
     var celeb = new Celeb({
         name: req.body.name,
@@ -20,7 +13,7 @@ function createCeleb(req, res) {
         if (err) {
             return res.status(500).send(err.message);
         }
-        res.send('Celebrity: ' + celeb.name + ' was successfully created.');
+        res.send({celebId: celeb._id});
     });
 }
 
@@ -31,15 +24,15 @@ function updateCeleb(req, res) {
         celebFields[field] = req.body[field];
     }
 
-    Celeb.update({_id: req.params.celeb_id}, celebFields, {upsert: false, multi: false}, function(err, numAffected) {
+    Celeb.update({_id: req.params.celebId}, celebFields, {upsert: false, multi: false}, function(err, numAffected) {
         if (err) {
-            return res.status(500).send('Can not update celebrity: ' + req.params.celeb_id + ': ' + err.message);
+            return res.status(500).send('Can not update celebrity: ' + req.params.celebId + ': ' + err.message);
         }
-        res.send('Celebrity: ' + req.params.celeb_id + ' was successfully updated. Affected: ' + numAffected);
+        res.send('Celebrity: ' + req.params.celebId + ' was successfully updated. Affected: ' + numAffected);
     });
 }
 
-function listCelebs(req, res, next) {
+function listCelebs(req, res) {
     Celeb.find({}).limit(100).exec(function(err, celebs) {
         if (err) {
             throw err;
@@ -48,11 +41,28 @@ function listCelebs(req, res, next) {
     });
 }
 
-function showCeleb(req, res, next) {
-    Celeb.findOne({_id: req.params.celeb_id}, function(err, celeb) {
+function showCeleb(req, res) {
+    Celeb.findOne({_id: req.params.celebId}, function(err, celeb) {
         if (err) {
             throw err;
         }
         res. send(celeb);
     });
 }
+
+function deleteCeleb(req, res) {
+    Celeb.remove({_id: req.params.celebId}, function(err) {
+        if (err) {
+            return req.status(500).send('Can not delete celebrity with id: ' + req.params.celebId);
+        }
+        res.send('Celebrity with id: ' + req.params.celebId + ' was successfully removed');
+    });
+}
+
+module.exports = function(app) {
+    app.post(prefix, User.populateSession, User.requireRole('admin'), createCeleb);
+    app.put(prefix + '/:celebId', User.populateSession, User.requireRole('admin'), updateCeleb);
+    app.get(prefix + '/list', listCelebs);
+    app.get(prefix + '/:celebId', showCeleb);
+    app.del(prefix + '/:celebId', User.populateSession, User.requireRole('admin'), deleteCeleb);
+};
