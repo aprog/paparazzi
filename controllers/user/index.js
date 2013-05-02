@@ -83,7 +83,7 @@ function getToken(req, res) {
         if (!user) {
             return res.status(404).send('User with email: ' + req.body.email + ' and specified password was not found');
         }
-        res.send(user.authToken);
+        res.send(user.token);
     });
 }
 
@@ -107,10 +107,10 @@ function deleteUser(req, res) {
 
 module.exports = function(app) {
     app.post(prefix, User.populateSession, User.requireRole('admin'), createUser);
-    app.put(prefix + '/:userId', User.populateSession, User.requireRole('admin'), updateUser);
     app.get(prefix + '/list', listUsers);
-    app.get(prefix + '/:userId', showUser);
     app.get(prefix + '/getToken', getToken);
     app.post(prefix + '/logout', logoutUser);
+    app.get(prefix + '/:userId', showUser);
+    app.put(prefix + '/:userId', User.populateSession, User.requireRole('admin'), updateUser);
     app.del(prefix + '/:userId', User.populateSession, User.requireRole('admin'), deleteUser);
 };

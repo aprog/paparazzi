@@ -31,7 +31,7 @@ describe('Privileged user', function() {
     });
 });
 
-describe.skip('User', function() {
+describe('User', function() {
     describe('#list()', function() {
         it('should retrieve list of users without error', function(done) {
             request('http://localhost:3000/user/list', function(error, response, body) {
@@ -59,8 +59,8 @@ describe.skip('User', function() {
     });
 
     var newUserResponse = null;
+    var newUser = null;
     describe('#create()', function() {
-
         it('should create a user without error', function(done) {
             request.post('http://localhost:3000/user', {
                 form: {
@@ -77,11 +77,12 @@ describe.skip('User', function() {
                 done();
             });
         });
-
+    });
+    describe('#get()', function() {
         it('should retrieve newly created user', function(done) {
             request('http://localhost:3000/user/' + newUserResponse.userId, function(e, r, body) {
                 r.statusCode.should.equal(200);
-                var newUser = JSON.parse(body);
+                newUser = JSON.parse(body);
                 newUser.should.have.property('email');
                 newUser.email.should.equal('test@mail.com');
                 newUser.should.have.property('roles');
@@ -117,6 +118,46 @@ describe.skip('User', function() {
         });
     });
 
+    describe('#getToken()', function() {
+        it('should retrieve user authentication token', function(done) {
+            request('http://localhost:3000/user/getToken', {
+                form: {
+                    email: newUser.email,
+                    password: 'test',
+                    authToken: privilegedUser.token
+                }
+            }, function(e, r, body) {
+                r.statusCode.should.equal(200);
+                body.should.not.be.empty;
+                body.should.equal(newUser.token);
+                done();
+            });
+        });
+
+    });
+
+    describe('#logout()', function() {
+        it('should logout user (change authentication token)', function(done) {
+            request.post('http://localhost:3000/user/logout', {
+                form: {
+                    authToken: newUser.token
+                }
+            }, function(e, r) {
+                r.statusCode.should.equal(200);
+                done();
+            });
+        });
+        it('should retrieve user with changed authentication token', function(done) {
+            request('http://localhost:3000/user/' + newUser._id, function(e, r, body) {
+                r.statusCode.should.equal(200);
+                var logoutedUser = JSON.parse(body);
+                logoutedUser.should.have.property('token');
+                logoutedUser.token.should.not.be.equal(newUser.token);
+                done();
+            });
+        });
+    });
+
     describe('#remove()', function() {
         it('should remove user with specified id', function(done) {
             request.del('http://localhost:3000/user/' + newUserResponse.userId, {
@@ -137,7 +178,16 @@ describe.skip('User', function() {
     });
 });
 
-describe('Celebrity', function() {
+
+
+
+
+
+
+
+
+
+describe.skip('Celebrity', function() {
     describe('#list()', function() {
         it('should retrieve list of celebrities', function(done) {
             request('http://localhost:3000/celeb/list', function(e, r, body) {
