@@ -96,6 +96,15 @@ function logoutUser(req, res) {
     });
 }
 
+function deleteUser(req, res) {
+    User.remove({_id: req.params.userId}, function(err) {
+        if (err) {
+            return res.status(500).send('Can not remove user with id: ' + req.params.userId);
+        }
+        res.send('User with id: ' + req.params.userId + ' successfully removed');
+    });
+}
+
 module.exports = function(app) {
     app.post(prefix, User.populateSession, User.requireRole('admin'), createUser);
     app.put(prefix + '/:userId', User.populateSession, User.requireRole('admin'), updateUser);
@@ -103,4 +112,5 @@ module.exports = function(app) {
     app.get(prefix + '/:userId', showUser);
     app.get(prefix + '/getToken', getToken);
     app.post(prefix + '/logout', logoutUser);
+    app.del(prefix + '/:userId', User.populateSession, User.requireRole('admin'), deleteUser);
 };
