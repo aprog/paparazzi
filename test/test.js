@@ -31,7 +31,7 @@ describe('Privileged user', function() {
     });
 });
 
-describe.skip('User', function() {
+describe('User', function() {
     describe('#list()', function() {
         it('should retrieve list of users without error', function(done) {
             request('http://localhost:3000/user/list', function(error, response, body) {
