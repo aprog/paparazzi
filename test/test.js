@@ -111,4 +111,23 @@ describe('User', function() {
             });
         });
     });
+
+    describe('#remove()', function() {
+        it('should remove user with specified id', function(done) {
+            request.del('http://localhost:3000/user/' + newUserResponse.userId, {
+                form: {
+                    authToken: privilegedUser.token
+                }
+            }, function(e, r) {
+                r.statusCode.should.equal(200);
+                done();
+            });
+        });
+        it('should not retrieve deleted user', function(done) {
+            request('http://localhost:3000/user/' + newUserResponse.userId, function(e, r) {
+                r.statusCode.should.equal(404);
+                done();
+            });
+        });
+    });
 });
