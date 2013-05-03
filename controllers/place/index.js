@@ -99,7 +99,7 @@ module.exports = function(app) {
     app.all(prefix, User.populateSession);
 
     app.post(prefix, User.requireRole('admin'), createPlace);
-    app.put(prefix + '/:place_id', User.requireRole('admin'), updatePlace);
+    app.put(prefix + '/:placeId', User.requireRole('admin'), updatePlace);
     app.get(prefix + '/list', listPlaces);
-    app.get(prefix + '/:place_id', showPlace);
+    app.get(prefix + '/:placeId', showPlace);
 };
