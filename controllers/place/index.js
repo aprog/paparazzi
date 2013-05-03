@@ -7,14 +7,6 @@ var async = require('async');
 var crypto = require('crypto');
 var prefix = '/place';
 
-module.exports = function(app, options) {
-    app.all(prefix, User.populateSession);
-
-    app.post(prefix, User.requireRole('admin'), createPlace);
-    app.put(prefix + '/:place_id', User.requireRole('admin'), updatePlace);
-    app.get(prefix + '/list', listPlaces);
-    app.get(prefix + '/:place_id', showPlace);
-};
 
 function transferFile(file, cb) {
     var d = new Date();
@@ -68,7 +60,7 @@ function createPlace(req, res) {
             if (err) {
                 return res.status(500).send(err.message);
             }
-            res.send('Place was successfully created.');
+            res.send({placeId: place._id});
         });
     });
 }
@@ -81,11 +73,11 @@ function updatePlace(req, res) {
     if (req.body.message) {
         placeToUpdate.message = req.body.message;
     }
-    Place.update({_id: req.params.place_id}, placeToUpdate, {upsert: false, multi: false}, function(err, numAffected) {
+    Place.update({_id: req.params.placeId}, placeToUpdate, {upsert: false, multi: false}, function(err, numAffected) {
         if (err) {
-            return res.status(500).send('Can not update place: ' + req.params.place_id + ': ' + err.message);
+            return res.status(500).send('Can not update place: ' + req.params.placeId + ': ' + err.message);
         }
-        res.send('Place: ' + req.params.place_id + ' was successfully updated. Affected: ' + numAffected);
+        res.send('Place: ' + req.params.placeId + ' was successfully updated. Affected: ' + numAffected);
     });
 }
 
@@ -98,8 +90,17 @@ function listPlaces(req, res) {
     });
 }
 
-function showPlace(req, res, next) {
-    Place.findOne({_id: req.params.place_id}, function(err, place) {
+function showPlace(req, res) {
+    Place.findOne({_id: req.params.placeId}, function(err, place) {
         res.send(place);
     });
 }
+
+module.exports = function(app) {
+    app.all(prefix, User.populateSession);
+
+    app.post(prefix, User.requireRole('admin'), createPlace);
+    app.put(prefix + '/:place_id', User.requireRole('admin'), updatePlace);
+    app.get(prefix + '/list', listPlaces);
+    app.get(prefix + '/:place_id', showPlace);
+};
