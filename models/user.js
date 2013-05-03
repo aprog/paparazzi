@@ -40,7 +40,7 @@ userSchema.statics.populateSession = function(req, res, next) {
 
 userSchema.statics.requireRole = function(role) {
 	return function(req, res, next) {
-		var userRoles = req.session.user.roles || [];
+		var userRoles = (req.session.user && req.session.user.roles) || [];
 		for (var i = 0; i < userRoles.length; i++) {
 			if (userRoles[i] === role) {
 				return next();
