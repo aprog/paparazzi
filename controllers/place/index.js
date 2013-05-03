@@ -7,7 +7,6 @@ var async = require('async');
 var crypto = require('crypto');
 var prefix = '/place';
 
-
 function transferFile(file, cb) {
     var d = new Date();
     var randomString = crypto.createHash('md5').update(Math.random() + '').digest('hex');
