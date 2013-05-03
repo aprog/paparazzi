@@ -92,6 +92,7 @@ function logoutUser(req, res) {
         if (err) {
             throw err;
         }
+        req.session.destroy();
         res.send('Logout status: ' + isLogouted);
     });
 }
