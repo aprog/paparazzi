@@ -5,28 +5,30 @@ var fs = require('fs');
 var format = require('util').format;
 var async = require('async');
 var crypto = require('crypto');
+var path = require('path');
 var prefix = '/place';
 
 function transferFile(file, cb) {
     var d = new Date();
     var randomString = crypto.createHash('md5').update(Math.random() + '').digest('hex');
-    var uploadTo = 'public/photos/' + format('%d-%d-%d-%s-%s', d.getFullYear(), d.getMonth(), d.getDay(), randomString, file.name);
+    var publicPath = 'public';
+    var imagePath = 'photos/' + format('%d-%d-%d-%s-%s', d.getFullYear(), d.getMonth(), d.getDay(), randomString, file.name);
     var is = fs.createReadStream(file.path);
-    var os = fs.createWriteStream(uploadTo);
+    var os = fs.createWriteStream(path.join(publicPath, imagePath));
     is.pipe(os);
     is.on('end', function() {
         fs.unlink(file.path, function(err) {
             if (err) {
-                return cb(uploadTo, err);
+                return cb(imagePath, err);
             }
-            cb(uploadTo, null);
+            cb(imagePath, null);
         });
     });
 }
 
 function createPlace(req, res) {
     var uploadedFiles = [];
-    var photoFiles = req.files.photos || [];
+    var photoFiles = (req.files && req.files.photos) || [];
     if (!(photoFiles instanceof Array)) {
         photoFiles = [ photoFiles ];
     }
@@ -66,7 +68,6 @@ function createPlace(req, res) {
 
 function updatePlace(req, res) {
     var placeToUpdate = {
-        userId: req.body.userId,
         celebId: req.body.celebId
     };
     if (req.body.message) {
@@ -91,15 +92,29 @@ function listPlaces(req, res) {
 
 function showPlace(req, res) {
     Place.findOne({_id: req.params.placeId}, function(err, place) {
+        if (err) {
+            throw err;
+        }
+        if (!place) {
+            return res.status(404).send('Place with id: ' + req.params.placeId + ' was not found');
+        }
         res.send(place);
     });
 }
 
-module.exports = function(app) {
-    app.all(prefix, User.populateSession);
+function deletePlace(req, res) {
+    Place.remove({_id: req.params.placeId}, function(err) {
+        if (err) {
+            return res.status(500).send('Can not remove place with id: ' + req.params.placeId);
+        }
+        res.send('Place with id: ' + req.params.placeId + ' was successfully removed');
+    });
+}
 
-    app.post(prefix, User.requireRole('admin'), createPlace);
-    app.put(prefix + '/:placeId', User.requireRole('admin'), updatePlace);
+module.exports = function(app) {
     app.get(prefix + '/list', listPlaces);
+    app.post(prefix, User.populateSession, User.requireRole('admin'), createPlace);
+    app.put(prefix + '/:placeId', User.populateSession, User.requireRole('admin'), updatePlace);
     app.get(prefix + '/:placeId', showPlace);
+    app.del(prefix + '/:placeId', User.populateSession, User.requireRole('admin'), deletePlace);
 };
