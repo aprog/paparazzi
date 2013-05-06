@@ -146,6 +146,26 @@ describe('User', function() {
                 done();
             });
         });
+        it('should not retrieve token with unspecified email', function(done) {
+            request('http://localhost:3000/user/getToken', {
+                form: {
+                    password: 'test',
+                }
+            }, function(e, r, body) {
+                r.statusCode.should.equal(404);
+                done();
+            });
+        });
+        it('should not retrieve token with unspecified password', function(done) {
+            request('http://localhost:3000/user/getToken', {
+                form: {
+                    email: newUser.email,
+                }
+            }, function(e, r, body) {
+                r.statusCode.should.equal(404);
+                done();
+            });
+        });
     });
 
     describe('#logout()', function() {
