@@ -53,7 +53,7 @@ function updateUser(req, res) {
 function listUsers(req, res) {
     User.find({}).limit(100).exec(function(err, users) {
         if (err) {
-            throw err;
+            return res.status(500).send(err.message);
         }
         res.send(users);
     });
@@ -62,7 +62,7 @@ function listUsers(req, res) {
 function showUser(req, res) {
     User.findOne({_id: req.params.userId}, function(err, user) {
         if (err) {
-            return res.status(404).send(err);
+            return res.status(500).send(err.message);
         }
         if (!user) {
             return res.status(404).send('User with id: ' + req.params.userId + ' was not found');
@@ -78,7 +78,7 @@ function getToken(req, res) {
     var hashedPassword = User.encryptPassword(req.body.password);
     User.findOne({email: req.body.email, password: hashedPassword}, function(err, user) {
         if (err) {
-            throw err;
+            return res.status(500).send(err.message);
         }
         if (!user) {
             return res.status(404).send('User with email: ' + req.body.email + ' and specified password was not found');
@@ -90,7 +90,7 @@ function getToken(req, res) {
 function logoutUser(req, res) {
     User.logout(req.body.authToken, function(err, isLogouted) {
         if (err) {
-            return res.status(500).send(err);
+            return res.status(500).send(err.message);
         }
         if (!isLogouted) {
             return res.status(404).send('User with specified token: ' + req.body.authToken + ' was not found');
