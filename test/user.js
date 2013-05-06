@@ -77,6 +77,12 @@ describe('User', function() {
                 done();
             });
         });
+        it('should not retrieve nonexistent user', function(done) {
+            request('http://localhost:3000/user/nonexistent-user-id', function(e, r) {
+                r.statusCode.should.equal(404);
+                done();
+            });
+        });
     });
 
     describe('#update()', function() {
@@ -88,6 +94,18 @@ describe('User', function() {
                 }
             }, function(e, r) {
                 r.statusCode.should.equal(200);
+                done();
+            });
+        });
+
+        it('should not update user without privileged permissions', function(done) {
+            request.put('http://localhost:3000/user/' + newUserResponse.userId, {
+                form: {
+                    authToken: newUser.token,
+                    roles: ['admin']
+                }
+            }, function(e, r) {
+                r.statusCode.should.equal(401);
                 done();
             });
         });
@@ -109,12 +127,22 @@ describe('User', function() {
                 form: {
                     email: newUser.email,
                     password: 'test',
-                    authToken: privilegedUser.token
                 }
             }, function(e, r, body) {
                 r.statusCode.should.equal(200);
                 body.should.not.be.empty;
                 body.should.equal(newUser.token);
+                done();
+            });
+        });
+        it('should not retrieve token for nonexistent user', function(done) {
+            request('http://localhost:3000/user/getToken', {
+                form: {
+                    email: 'nonexistent@mail.com',
+                    password: 'nonexistent',
+                }
+            }, function(e, r, body) {
+                r.statusCode.should.equal(404);
                 done();
             });
         });
@@ -131,7 +159,7 @@ describe('User', function() {
                 done();
             });
         });
-        it('should retrieve user with changed authentication token', function(done) {
+        it('should retrieve logged out user (with changed authentication token)', function(done) {
             request('http://localhost:3000/user/' + newUser._id, function(e, r, body) {
                 r.statusCode.should.equal(200);
                 var logoutedUser = JSON.parse(body);
