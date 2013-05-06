@@ -168,6 +168,16 @@ describe('User', function() {
                 done();
             });
         });
+        it('should not log out user with nonexistent token', function(done) {
+            request.post('http://localhost:3000/user/logout', {
+                form: {
+                    authToken: 'nonexistent-token'
+                }
+            }, function(e, r) {
+                r.statusCode.should.equal(404);
+                done();
+            });
+        });
     });
 
     describe('#remove()', function() {
@@ -183,6 +193,16 @@ describe('User', function() {
         });
         it('should not retrieve deleted user', function(done) {
             request('http://localhost:3000/user/' + newUserResponse.userId, function(e, r) {
+                r.statusCode.should.equal(404);
+                done();
+            });
+        });
+        it('should not remove user with nonexistent id', function(done) {
+            request.del('http://localhost:3000/user/000000000000000000000000', {
+                form: {
+                    authToken: privilegedUser.token
+                }
+            }, function(e, r, body) {
                 r.statusCode.should.equal(404);
                 done();
             });
