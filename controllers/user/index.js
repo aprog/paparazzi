@@ -62,7 +62,7 @@ function listUsers(req, res) {
 function showUser(req, res) {
     User.findOne({_id: req.params.userId}, function(err, user) {
         if (err) {
-            throw err;
+            return res.status(404).send(err);
         }
         if (!user) {
             return res.status(404).send('User with id: ' + req.params.userId + ' was not found');
