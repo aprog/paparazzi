@@ -46,6 +46,7 @@ userSchema.statics.requireRole = function(role) {
 				return next();
 			}
 		}
+		res.statusCode = 401;
 		next('User do not have permission to do required operation');
 	};
 };
