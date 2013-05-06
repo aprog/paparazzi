@@ -90,7 +90,10 @@ function getToken(req, res) {
 function logoutUser(req, res) {
     User.logout(req.body.authToken, function(err, isLogouted) {
         if (err) {
-            throw err;
+            return res.status(500).send(err);
+        }
+        if (!isLogouted) {
+            return res.status(404).send('User with specified token: ' + req.body.authToken + ' was not found');
         }
         req.session.destroy();
         res.send('Logout status: ' + isLogouted);
@@ -98,9 +101,12 @@ function logoutUser(req, res) {
 }
 
 function deleteUser(req, res) {
-    User.remove({_id: req.params.userId}, function(err) {
+    User.remove({_id: req.params.userId}, function(err, isRemoved) {
         if (err) {
             return res.status(500).send('Can not remove user with id: ' + req.params.userId);
+        }
+        if (!isRemoved) {
+            return res.status(404).send('Can not find user with id: ' + req.params.userId + ' for removing');
         }
         res.send('User with id: ' + req.params.userId + ' successfully removed');
     });
