@@ -78,7 +78,7 @@ describe('User', function() {
             });
         });
         it('should not retrieve nonexistent user', function(done) {
-            request('http://localhost:3000/user/nonexistent-user-id', function(e, r) {
+            request('http://localhost:3000/user/000000000000000000000000', function(e, r) {
                 r.statusCode.should.equal(404);
                 done();
             });
