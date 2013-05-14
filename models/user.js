@@ -31,6 +31,7 @@ userSchema.statics.populateSession = function(req, res, next) {
 			return next(err);
 		}
 		if (!user) {
+			res.statusCode = 401;
 			return next('User with specified auth token was not found');
 		}
 		req.session.user = user;
