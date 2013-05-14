@@ -114,6 +114,13 @@ describe('Place', function() {
                 });
             });
         });
+
+        it('should not retrieve nonexistent place', function(done) {
+            request('http://localhost:3000/place/000000000000000000000000', function(e, r, body) {
+                r.statusCode.should.equal(404);
+                done();
+            });
+        });
     });
 
     describe('#update()', function() {
@@ -143,6 +150,20 @@ describe('Place', function() {
                 done();
             });
         });
+
+        it('should not update place without privileged permissions', function(done) {
+            request.put('http://localhost:3000/place/' + newPlaceResponse.placeId, {
+                form: {
+                    authToken: 'nonexistent-token',
+                    message: 'updated message',
+                    celebId: randomCelebrity._id
+                }
+            }, function(e, r) {
+                r.statusCode.should.equal(401);
+                done();
+            });
+        });
+
 
         it('should retrieve udpated place', function(done) {
             request('http://localhost:3000/place/' + newPlaceResponse.placeId, function(e, r, body) {
@@ -181,7 +202,6 @@ describe('Place', function() {
                 randomPlace.should.have.property('loc');
                 randomPlace.loc.should.have.property('lat');
                 randomPlace.loc.lat.should.be.a('number');
-
 
                 randomPlace.loc.should.have.property('long');
                 randomPlace.loc.long.should.be.a('number');
