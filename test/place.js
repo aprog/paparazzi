@@ -76,6 +76,34 @@ describe('Place', function() {
                 }
             });
         });
+
+        it('should not created place without privileged permissions', function(done) {
+            request.post('http://localhost:3000/place', {
+                form: {
+                    authToken: 'nonexistent-token'
+                }
+            }, function(e, r) {
+                r.statusCode.should.equal(401);
+                done();
+            });
+        });
+
+        it('should not created place without userId', function(done) {
+            request.post('http://localhost:3000/place', {
+                form: {
+                    authToken: privilegedUser.token,
+                    celebId: randomCelebrity._id,
+                    message: 'test-2 message',
+                    loc: {
+                        lat: '50.450809',
+                        long: '30.522871'
+                    }
+                }
+            }, function(e, r) {
+                r.statusCode.should.equal(422);
+                done();
+            });
+        });
     });
 
     describe('#get()', function() {
@@ -225,6 +253,17 @@ describe('Place', function() {
                 }
             }, function(e, r) {
                 r.statusCode.should.equal(200);
+                done();
+            });
+        });
+
+        it('should not remove place without privileged permissions', function(done) {
+            request.del('http://localhost:3000/place/' + newPlaceResponse.placeId, {
+                form: {
+                    authToken: 'nonexistent-token'
+                }
+            }, function(e, r) {
+                r.statusCode.should.equal(401);
                 done();
             });
         });
