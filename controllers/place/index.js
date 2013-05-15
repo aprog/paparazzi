@@ -59,6 +59,9 @@ function createPlace(req, res) {
         });
         place.save(function(err, place) {
             if (err) {
+                if (err.name == 'ValidationError') {
+                    return res.status(422).send(err.message);
+                }
                 return res.status(500).send(err.message);
             }
             res.send({placeId: place._id});
