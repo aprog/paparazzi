@@ -11,6 +11,9 @@ function createCeleb(req, res) {
 
     celeb.save(function(err, celeb) {
         if (err) {
+            if (err.name == 'ValidationError') {
+                return res.status(422).send(err.message);
+            }
             return res.status(500).send(err.message);
         }
         res.send({celebId: celeb._id});
@@ -64,8 +67,8 @@ function deleteCeleb(req, res) {
 
 module.exports = function(app) {
     app.post(prefix, User.populateSession, User.requireRole('admin'), createCeleb);
-    app.put(prefix + '/:celebId', User.populateSession, User.requireRole('admin'), updateCeleb);
     app.get(prefix + '/list', listCelebs);
+    app.put(prefix + '/:celebId', User.populateSession, User.requireRole('admin'), updateCeleb);
     app.get(prefix + '/:celebId', showCeleb);
     app.del(prefix + '/:celebId', User.populateSession, User.requireRole('admin'), deleteCeleb);
 };
