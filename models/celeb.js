@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 
 var celebSchema = mongoose.Schema({
-    name: {type: String, require: true},
+    name: {type: String, required: true},
     about: {type: String, 'default': ''}
 });
 
