@@ -24,6 +24,7 @@ userSchema.statics.logout = function(authToken, cb) {
 
 userSchema.statics.populateSession = function(req, res, next) {
 	if (!req.body.authToken) {
+		res.statusCode = 401;
 		return next('Can not populate session: auth token is empty');
 	}
 	mongoose.model('User').findOne({token: req.body.authToken}, function(err, user) {
