@@ -144,7 +144,7 @@ describe('Place', function() {
         });
 
         it('should not retrieve nonexistent place', function(done) {
-            request('http://localhost:3000/place/000000000000000000000000', function(e, r, body) {
+            request('http://localhost:3000/place/000000000000000000000000', function(e, r) {
                 r.statusCode.should.equal(404);
                 done();
             });
