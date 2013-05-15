@@ -61,6 +61,19 @@ describe('User', function() {
                 done();
             });
         });
+        it('should not create a user without privileged permissions', function(done) {
+            request.post('http://localhost:3000/user', {
+                form: {
+                    authToken: 'nonexistent-token',
+                    email: 'test-2@mail.com',
+                    password: 'test-2',
+                    roles: ['user']
+                }
+            }, function(e, r) {
+                r.statusCode.should.equal(401);
+                done();
+            });
+        });
     });
 
     describe('#get()', function() {
@@ -141,7 +154,7 @@ describe('User', function() {
                     email: 'nonexistent@mail.com',
                     password: 'nonexistent',
                 }
-            }, function(e, r, body) {
+            }, function(e, r) {
                 r.statusCode.should.equal(404);
                 done();
             });
@@ -151,7 +164,7 @@ describe('User', function() {
                 form: {
                     password: 'test',
                 }
-            }, function(e, r, body) {
+            }, function(e, r) {
                 r.statusCode.should.equal(404);
                 done();
             });
@@ -161,7 +174,7 @@ describe('User', function() {
                 form: {
                     email: newUser.email,
                 }
-            }, function(e, r, body) {
+            }, function(e, r) {
                 r.statusCode.should.equal(404);
                 done();
             });
@@ -194,7 +207,7 @@ describe('User', function() {
                     authToken: 'nonexistent-token'
                 }
             }, function(e, r) {
-                r.statusCode.should.equal(404);
+                r.statusCode.should.equal(401);
                 done();
             });
         });
@@ -211,6 +224,16 @@ describe('User', function() {
                 done();
             });
         });
+        it('should not remove user without privileged permissions', function(done) {
+            request.del('http://localhost:3000/user/' + newUserResponse.userId, {
+                form: {
+                    authToken: 'nonexistent-token'
+                }
+            }, function(e, r) {
+                r.statusCode.should.equal(401);
+                done();
+            });
+        });
         it('should not retrieve deleted user', function(done) {
             request('http://localhost:3000/user/' + newUserResponse.userId, function(e, r) {
                 r.statusCode.should.equal(404);
@@ -222,7 +245,7 @@ describe('User', function() {
                 form: {
                     authToken: privilegedUser.token
                 }
-            }, function(e, r, body) {
+            }, function(e, r) {
                 r.statusCode.should.equal(404);
                 done();
             });
