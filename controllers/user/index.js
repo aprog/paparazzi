@@ -93,7 +93,7 @@ function logoutUser(req, res) {
             return res.status(500).send(err.message);
         }
         if (!isLogouted) {
-            return res.status(404).send('User with specified token: ' + req.body.authToken + ' was not found');
+            return res.status(401).send('Authentication required before performing log out operation');
         }
         req.session.destroy();
         res.send('Logout status: ' + isLogouted);
