@@ -136,12 +136,9 @@ describe('User', function() {
 
     describe('#getToken()', function() {
         it('should retrieve user authentication token', function(done) {
-            request('http://localhost:3000/user/getToken', {
-                form: {
-                    email: newUser.email,
-                    password: 'test',
-                }
-            }, function(e, r, body) {
+            request('http://localhost:3000/user/getToken/?email=' +
+            encodeURIComponent(newUser.email) + '&password=' +
+            encodeURIComponent('test'), function(e, r, body) {
                 r.statusCode.should.equal(200);
                 body.should.not.be.empty;
                 body.should.equal(newUser.token);
