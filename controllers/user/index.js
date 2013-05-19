@@ -72,16 +72,16 @@ function showUser(req, res) {
 }
 
 function getToken(req, res) {
-    if (!req.body.email || !req.body.password) {
+    if (!req.query.email || !req.query.password) {
         return res.status(404).send('Email and password are required');
     }
-    var hashedPassword = User.encryptPassword(req.body.password);
-    User.findOne({email: req.body.email, password: hashedPassword}, function(err, user) {
+    var hashedPassword = User.encryptPassword(req.query.password);
+    User.findOne({email: req.query.email, password: hashedPassword}, function(err, user) {
         if (err) {
             return res.status(500).send(err.message);
         }
         if (!user) {
-            return res.status(404).send('User with email: ' + req.body.email + ' and specified password was not found');
+            return res.status(404).send('User with email: ' + req.query.email + ' and specified password was not found');
         }
         res.send(user.token);
     });
