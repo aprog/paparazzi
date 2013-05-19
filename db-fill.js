@@ -104,7 +104,7 @@ function generatePlaces() {
 		}
 
 		Celeb.find({}, function(err, celebs) {
-			var count_to_call = 1000000;
+			var count_to_call = 1000;
 			function savePlace(called) {
 				if (called < count_to_call) {
 					randomUserId = users[Math.floor(Math.random() * users.length)]._id;
