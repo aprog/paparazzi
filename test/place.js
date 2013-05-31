@@ -20,8 +20,8 @@ describe('Wait for privileged user load', function() {
 
 describe('Place', function() {
     var newPlaceResponse = null;
+    var randomUser = null;
     describe('#create()', function() {
-        var randomUser = null;
         var randomCelebrity = null;
         it('should retrieve random user', function(done) {
             request('http://localhost:3000/user/list', function(e, r, body) {
@@ -240,6 +240,26 @@ describe('Place', function() {
                 randomPlace.should.have.property('photos');
                 randomPlace.photos.should.be.an.instanceOf(Array);
 
+                done();
+            });
+        });
+
+        it('should retrieve user places', function(done) {
+            request('http://localhost:3000/place/list/' + randomUser._id, function(e, r, body) {
+                r.statusCode.should.equal(200);
+                body.should.not.be.empty;
+                var placeList = JSON.parse(body);
+                placeList.should.be.an.instanceOf(Array);
+                done();
+            });
+        });
+
+        it('should retrieve empty places list for nonexistent user', function(done) {
+            request('http://localhost:3000/place/list/000000000000000000000000', function(e, r, body) {
+                r.statusCode.should.equal(200);
+                var placeList = JSON.parse(body);
+                placeList.should.be.an.instanceOf(Array);
+                placeList.should.be.empty;
                 done();
             });
         });
