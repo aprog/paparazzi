@@ -110,7 +110,6 @@ function showPlace(req, res) {
         if (!place) {
             return res.status(404).send('Place with id: ' + req.params.placeId + ' was not found');
         }
-        console.log(place);
         res.send(place);
     });
 }
