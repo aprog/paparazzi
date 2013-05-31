@@ -11,7 +11,7 @@ function createCeleb(req, res) {
 
     celeb.save(function(err, celeb) {
         if (err) {
-            if (err.name == 'ValidationError') {
+            if (err.name === 'ValidationError') {
                 return res.status(422).send(err.message);
             }
             return res.status(500).send(err.message);
