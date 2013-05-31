@@ -88,7 +88,7 @@ describe('Place', function() {
             });
         });
 
-        it('should not created place without userId', function(done) {
+        it('should not created place without user', function(done) {
             request.post('http://localhost:3000/place', {
                 form: {
                     authToken: privilegedUser.token,
@@ -112,8 +112,12 @@ describe('Place', function() {
                 r.statusCode.should.equal(200);
                 body.should.not.be.empty;
                 var newPlace = JSON.parse(body);
-                newPlace.should.have.property('userId');
-                newPlace.userId.should.not.be.empty;
+                newPlace.should.have.property('user');
+                newPlace.user.should.be.an.instanceOf(Object);
+                newPlace.user.should.have.property('email');
+                newPlace.user.email.should.not.be.empty;
+                newPlace.user.should.have.property('_id');
+                newPlace.user._id.should.not.be.empty;
 
                 newPlace.should.have.property('celebId');
                 newPlace.celebId.should.not.be.empty;
@@ -221,8 +225,12 @@ describe('Place', function() {
                 randomPlace.should.have.property('celebId');
                 randomPlace.celebId.should.not.be.empty;
 
-                randomPlace.should.have.property('userId');
-                randomPlace.userId.should.not.be.empty;
+                randomPlace.should.have.property('user');
+                randomPlace.user.should.be.an.instanceOf(Object);
+                randomPlace.user.should.have.property('email');
+                randomPlace.user.email.should.not.be.empty;
+                randomPlace.user.should.have.property('_id');
+                randomPlace.user._id.should.not.be.empty;
 
                 randomPlace.should.have.property('ctime');
                 randomPlace.ctime.should.not.be.empty;
