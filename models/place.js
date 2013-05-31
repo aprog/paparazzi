@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 
 var placeSchema = mongoose.Schema({
-    userId: {type: mongoose.Schema.Types.ObjectId, required: true},
+    user: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
     celebId: {type: mongoose.Schema.Types.ObjectId, required: true},
     message: {type: String, 'default': ''},
     loc: {

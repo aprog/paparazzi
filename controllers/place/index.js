@@ -47,7 +47,7 @@ function createPlace(req, res) {
         }
         // finally create Place object and save it to the database
         var place = new Place({
-            userId: req.body.userId,
+            user: req.body.userId,
             celebId: req.body.celebId,
             message: req.body.message,
             photos: uploadedFiles,
@@ -85,7 +85,7 @@ function updatePlace(req, res) {
 }
 
 function listPlaces(req, res) {
-    Place.find({}).sort({'ctime': -1}).limit(100).exec(function(err, places) {
+    Place.find({}).sort({'ctime': -1}).limit(100).populate('user', 'email _id').exec(function(err, places) {
         if (err) {
             throw err;
         }
@@ -103,13 +103,14 @@ function listUserPlaces(req, res) {
 }
 
 function showPlace(req, res) {
-    Place.findOne({_id: req.params.placeId}, function(err, place) {
+    Place.findOne({_id: req.params.placeId}).populate('user', 'email _id').exec(function(err, place) {
         if (err) {
             throw err;
         }
         if (!place) {
             return res.status(404).send('Place with id: ' + req.params.placeId + ' was not found');
         }
+        console.log(place);
         res.send(place);
     });
 }
