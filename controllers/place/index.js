@@ -94,7 +94,7 @@ function listPlaces(req, res) {
 }
 
 function listUserPlaces(req, res) {
-    Place.find({userId: req.params.userId}, function(err, places) {
+    Place.find({user: req.params.userId}).populate('user', 'email _id').exec(function(err, places) {
         if (err) {
             throw err;
         }
