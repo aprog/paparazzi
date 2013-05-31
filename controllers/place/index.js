@@ -93,6 +93,15 @@ function listPlaces(req, res) {
     });
 }
 
+function listUserPlaces(req, res) {
+    Place.find({userId: req.params.userId}, function(err, places) {
+        if (err) {
+            throw err;
+        }
+        res.send(places);
+    });
+}
+
 function showPlace(req, res) {
     Place.findOne({_id: req.params.placeId}, function(err, place) {
         if (err) {
@@ -116,6 +125,7 @@ function deletePlace(req, res) {
 
 module.exports = function(app) {
     app.get(prefix + '/list', listPlaces);
+    app.get(prefix + '/list/:userId', listUserPlaces);
     app.post(prefix, User.populateSession, User.requireRole('admin'), createPlace);
     app.put(prefix + '/:placeId', User.populateSession, User.requireRole('admin'), updatePlace);
     app.get(prefix + '/:placeId', showPlace);
