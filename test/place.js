@@ -258,6 +258,39 @@ describe('Place', function() {
                 body.should.not.be.empty;
                 var placeList = JSON.parse(body);
                 placeList.should.be.an.instanceOf(Array);
+
+                var randomPosition = Math.floor(Math.random() * placeList.length);
+                var randomPlace = placeList[randomPosition];
+
+                randomPlace.should.have.property('_id');
+                randomPlace._id.should.not.be.empty;
+
+                randomPlace.should.have.property('celebId');
+                randomPlace.celebId.should.not.be.empty;
+
+                randomPlace.should.have.property('user');
+                randomPlace.user.should.be.an.instanceOf(Object);
+                randomPlace.user.should.have.property('email');
+                randomPlace.user.email.should.not.be.empty;
+                randomPlace.user.should.have.property('_id');
+                randomPlace.user._id.should.not.be.empty;
+
+                randomPlace.should.have.property('ctime');
+                randomPlace.ctime.should.not.be.empty;
+
+                randomPlace.should.have.property('loc');
+                randomPlace.loc.should.have.property('lat');
+                randomPlace.loc.lat.should.be.a('number');
+
+                randomPlace.loc.should.have.property('long');
+                randomPlace.loc.long.should.be.a('number');
+
+                randomPlace.should.have.property('message');
+                randomPlace.message.should.not.be.empty;
+
+                randomPlace.should.have.property('photos');
+                randomPlace.photos.should.be.an.instanceOf(Array);
+
                 done();
             });
         });
