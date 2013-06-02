@@ -11,14 +11,15 @@ var userSchema = mongoose.Schema({
 });
 
 var placeSchema = mongoose.Schema({
-	userId: mongoose.Schema.Types.ObjectId,
+	user: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
 	celebId: mongoose.Schema.Types.ObjectId,
-	message: String,
+	message: {type: String, 'default': ''},
 	loc: {
 		lat: Number,
-		"long": Number
+		'long': Number
 	},
-	ctime: {type: Date, 'default': Date.now}
+	ctime: {type: Date, 'default': Date.now},
+	photos: {type: Array, 'default': []}
 });
 
 var celebSchema = mongoose.Schema({
@@ -111,7 +112,7 @@ function generatePlaces() {
 					randomCelebId = celebs[Math.floor(Math.random() * celebs.length)]._id;
 
 					var place = new Place({
-						userId: randomUserId,
+						user: randomUserId,
 						celebId: randomCelebId,
 						message: 'Etiam ultricies nisi vel augue.',
 						loc: {
