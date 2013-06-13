@@ -51,9 +51,9 @@ function createPlace(req, res) {
             celebId: req.body.celebId,
             message: req.body.message,
             photos: uploadedFiles,
-            loc: {
-                lat: req.body.loc.lat,
-                'long': req.body.loc.long
+            location: {
+                latitude: req.body.location.latitude,
+                longtitude: req.body.location.longtitude
             },
             ctime: Date.now()
         });

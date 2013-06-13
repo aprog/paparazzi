@@ -63,8 +63,8 @@ describe('Place', function() {
                 form.append('userId', randomUser._id);
                 form.append('celebId', randomCelebrity._id);
                 form.append('message', 'test message');
-                form.append('loc[lat]', '50.450809');
-                form.append('loc[long]', '30.522871');
+                form.append('location[latitude]', '50.450809');
+                form.append('location[longtitude]', '30.522871');
 
                 var randomCount = Math.floor(Math.random() * 10); // ten - maximum photos per Place record
                 var randomFileNum = null;
@@ -94,9 +94,9 @@ describe('Place', function() {
                     authToken: privilegedUser.token,
                     celebId: randomCelebrity._id,
                     message: 'test-2 message',
-                    loc: {
-                        lat: '50.450809',
-                        long: '30.522871'
+                    location: {
+                        latitude: '50.450809',
+                        longtitude: '30.522871'
                     }
                 }
             }, function(e, r) {
@@ -125,11 +125,11 @@ describe('Place', function() {
                 newPlace.should.have.property('message');
                 newPlace.message.should.equal('test message');
 
-                newPlace.should.have.property('loc');
-                newPlace.loc.should.have.property('lat');
-                newPlace.loc.lat.should.equal(50.450809);
-                newPlace.loc.should.have.property('long');
-                newPlace.loc.long.should.equal(30.522871);
+                newPlace.should.have.property('location');
+                newPlace.location.should.have.property('latitude');
+                newPlace.location.latitude.should.equal(50.450809);
+                newPlace.location.should.have.property('longtitude');
+                newPlace.location.longtitude.should.equal(30.522871);
                 newPlace.should.have.property('photos');
                 newPlace.photos.should.be.an.instanceOf(Array);
 
@@ -235,12 +235,12 @@ describe('Place', function() {
                 randomPlace.should.have.property('ctime');
                 randomPlace.ctime.should.not.be.empty;
 
-                randomPlace.should.have.property('loc');
-                randomPlace.loc.should.have.property('lat');
-                randomPlace.loc.lat.should.be.a('number');
+                randomPlace.should.have.property('location');
+                randomPlace.location.should.have.property('latitude');
+                randomPlace.location.latitude.should.be.a('number');
 
-                randomPlace.loc.should.have.property('long');
-                randomPlace.loc.long.should.be.a('number');
+                randomPlace.location.should.have.property('longtitude');
+                randomPlace.location.longtitude.should.be.a('number');
 
                 randomPlace.should.have.property('message');
                 randomPlace.message.should.not.be.empty;
@@ -278,12 +278,12 @@ describe('Place', function() {
                 randomPlace.should.have.property('ctime');
                 randomPlace.ctime.should.not.be.empty;
 
-                randomPlace.should.have.property('loc');
-                randomPlace.loc.should.have.property('lat');
-                randomPlace.loc.lat.should.be.a('number');
+                randomPlace.should.have.property('location');
+                randomPlace.location.should.have.property('latitude');
+                randomPlace.location.latitude.should.be.a('number');
 
-                randomPlace.loc.should.have.property('long');
-                randomPlace.loc.long.should.be.a('number');
+                randomPlace.location.should.have.property('longtitude');
+                randomPlace.location.longtitude.should.be.a('number');
 
                 randomPlace.should.have.property('message');
                 randomPlace.message.should.not.be.empty;
