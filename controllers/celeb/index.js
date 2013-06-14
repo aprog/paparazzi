@@ -2,6 +2,8 @@ var mongoose = require('mongoose');
 var Celeb = mongoose.model('Celeb');
 var User = mongoose.model('User');
 var prefix = '/celeb';
+var MAX_CELEBS_PER_QUERY = 100;
+var DEFAULT_CELEBS_PER_QUERY = 10;
 
 function createCeleb(req, res) {
     var celeb = new Celeb({
@@ -37,7 +39,7 @@ function updateCeleb(req, res) {
 
 function listCelebs(req, res) {
     var skip = req.query.skip ? req.query.skip : 0;
-    var limit = req.query.limit ? Math.min(100, req.query.limit) : 10;
+    var limit = req.query.limit ? Math.min(MAX_CELEBS_PER_QUERY, req.query.limit) : DEFAULT_CELEBS_PER_QUERY;
     Celeb.find({}).sort({name: 1}).skip(skip).limit(limit).exec(function(err, celebs) {
         if (err) {
             throw err;

@@ -7,6 +7,8 @@ var async = require('async');
 var crypto = require('crypto');
 var path = require('path');
 var prefix = '/place';
+var MAX_PLACES_PER_QUERY = 100;
+var DEFAULT_PLACES_PER_QUERY = 10;
 
 function transferFile(file, cb) {
     var d = new Date();
@@ -86,7 +88,7 @@ function updatePlace(req, res) {
 
 function listPlaces(req, res) {
     var skip = req.query.skip ? req.query.skip : 0;
-    var limit = req.query.limit ? Math.min(100, req.query.limit) : 10;
+    var limit = req.query.limit ? Math.min(MAX_PLACES_PER_QUERY, req.query.limit) : DEFAULT_PLACES_PER_QUERY;
     Place.find({}).sort({'ctime': -1}).skip(skip).limit(limit).populate('user', 'email _id').exec(function(err, places) {
         if (err) {
             throw err;

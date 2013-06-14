@@ -1,6 +1,8 @@
 var mongoose = require('mongoose');
 var User = mongoose.model('User');
 var prefix = '/user';
+var MAX_USERS_PER_QUERY = 100;
+var DEFAULT_USERS_PER_QUERY = 10;
 
 function createUser(req, res) {
     var userFields = {};
@@ -52,7 +54,7 @@ function updateUser(req, res) {
 
 function listUsers(req, res) {
     var skip = req.query.skip ? req.query.skip : 0;
-    var limit = req.query.limit ? Math.min(100, req.query.limit) : 10;
+    var limit = req.query.limit ? Math.min(MAX_USERS_PER_QUERY, req.query.limit) : DEFAULT_USERS_PER_QUERY;
     User.find({}).sort({email: 1}).skip(skip).limit(limit).exec(function(err, users) {
         if (err) {
             return res.status(500).send(err.message);
