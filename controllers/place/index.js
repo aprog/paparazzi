@@ -85,7 +85,9 @@ function updatePlace(req, res) {
 }
 
 function listPlaces(req, res) {
-    Place.find({}).sort({'ctime': -1}).limit(100).populate('user', 'email _id').exec(function(err, places) {
+    var skip = req.query.skip ? req.query.skip : 0;
+    var limit = req.query.limit ? Math.min(100, req.query.limit) : 10;
+    Place.find({}).sort({'ctime': -1}).skip(skip).limit(limit).populate('user', 'email _id').exec(function(err, places) {
         if (err) {
             throw err;
         }

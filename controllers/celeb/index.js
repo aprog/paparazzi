@@ -36,7 +36,9 @@ function updateCeleb(req, res) {
 }
 
 function listCelebs(req, res) {
-    Celeb.find({}).limit(100).exec(function(err, celebs) {
+    var skip = req.query.skip ? req.query.skip : 0;
+    var limit = req.query.limit ? Math.min(100, req.query.limit) : 10;
+    Celeb.find({}).sort({name: 1}).skip(skip).limit(limit).exec(function(err, celebs) {
         if (err) {
             throw err;
         }

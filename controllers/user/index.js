@@ -51,7 +51,9 @@ function updateUser(req, res) {
 }
 
 function listUsers(req, res) {
-    User.find({}).limit(100).exec(function(err, users) {
+    var skip = req.query.skip ? req.query.skip : 0;
+    var limit = req.query.limit ? Math.min(100, req.query.limit) : 10;
+    User.find({}).sort({email: 1}).skip(skip).limit(limit).exec(function(err, users) {
         if (err) {
             return res.status(500).send(err.message);
         }
