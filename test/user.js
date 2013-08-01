@@ -98,6 +98,28 @@ describe('User', function() {
         });
     });
 
+    describe('#get() by token', function() {
+        it('should retrieve by token newly created user', function(done) {
+            request('http://localhost:3000/user/getByToken/' + newUser.token, function(e, r, body) {
+                r.statusCode.should.equal(200);
+                retrievedUser = JSON.parse(body);
+                retrievedUser.should.have.property('email');
+                retrievedUser.email.should.equal(newUser.email);
+                retrievedUser.should.have.property('roles');
+                retrievedUser.roles.should.include('user');
+                retrievedUser.should.have.property('token');
+                retrievedUser.token.should.be.equal(newUser.token);
+                done();
+            });
+        });
+        it('should not retrieve nonexistent user by token', function(done) {
+            request('http://localhost:3000/user/getByToken/000000000000000000000000', function(e, r) {
+                r.statusCode.should.equal(404);
+                done();
+            });
+        });
+    });    
+
     describe('#update()', function() {
         it('should update newly created user', function(done) {
             request.put('http://localhost:3000/user/' + newUserResponse.userId, {
