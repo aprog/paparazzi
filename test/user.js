@@ -141,7 +141,14 @@ describe('User', function() {
             encodeURIComponent('test'), function(e, r, body) {
                 r.statusCode.should.equal(200);
                 body.should.not.be.empty;
-                body.should.equal(newUser.token);
+                var retrievedUser = JSON.parse(body);
+                retrievedUser.should.have.property('email');
+                retrievedUser.email.should.be.equal(newUser.email);
+                retrievedUser.should.have.property('_id');
+                retrievedUser._id.should.be.equal(newUser._id);
+                retrievedUser.should.have.property('roles');
+                retrievedUser.should.have.property('token');
+                retrievedUser.token.should.be.equal(newUser.token);
                 done();
             });
         });
