@@ -75,6 +75,18 @@ function showUser(req, res) {
     });
 }
 
+function getUserByToken(req, res) {
+    User.findOne({token: req.params.token}, 'email _id roles token', function(err, user) {
+        if (err) {
+            return res.status(500).send(err.message);
+        }
+        if (!user) {
+            return res.status(404).send('User with token: ' + req.params.token + ' was not found');
+        }
+        res.send(user);
+    });
+}
+
 function getToken(req, res) {
     if (!req.query.email || !req.query.password) {
         return res.status(404).send('Email and password are required');
@@ -122,6 +134,7 @@ module.exports = function(app) {
     app.get(prefix + '/getToken', getToken);
     app.post(prefix + '/logout', logoutUser);
     app.get(prefix + '/:userId', showUser);
+    app.get(prefix + '/getByToken/:token', getUserByToken);
     app.put(prefix + '/:userId', User.populateSession, User.requireRole('admin'), updateUser);
     app.del(prefix + '/:userId', User.populateSession, User.requireRole('admin'), deleteUser);
 };
