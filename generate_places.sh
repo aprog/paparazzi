@@ -41,8 +41,8 @@ do
         -F userId=$random_uid \
         -F celebId=$random_celeb \
         -F message="$message" \
-        -F loc[lat]=$lat \
-        -F loc[long]=$long \
+        -F loc[latitude]=$lat \
+        -F loc[longtitude]=$long \
         $files \
         localhost:3000/place
 
