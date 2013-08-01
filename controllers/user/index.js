@@ -80,14 +80,14 @@ function getToken(req, res) {
         return res.status(404).send('Email and password are required');
     }
     var hashedPassword = User.encryptPassword(req.query.password);
-    User.findOne({email: req.query.email, password: hashedPassword}, function(err, user) {
+    User.findOne({email: req.query.email, password: hashedPassword}, 'email _id roles token', function(err, user) {
         if (err) {
             return res.status(500).send(err.message);
         }
         if (!user) {
             return res.status(404).send('User with email: ' + req.query.email + ' and specified password was not found');
         }
-        res.send(user.token);
+        res.send(user);
     });
 }
 
