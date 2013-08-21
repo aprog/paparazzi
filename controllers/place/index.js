@@ -98,7 +98,9 @@ function listPlaces(req, res) {
 }
 
 function listUserPlaces(req, res) {
-    Place.find({user: req.params.userId}).populate('user', 'email _id').exec(function(err, places) {
+    var skip = req.query.skip ? req.query.skip : 0;
+    var limit = req.query.limit ? Math.min(MAX_PLACES_PER_QUERY, req.query.limit) : DEFAULT_PLACES_PER_QUERY;
+    Place.find({user: req.params.userId}).sort({ctime: -1}).skip(skip).limit(limit).populate('user', 'email _id').exec(function(err, places) {
         if (err) {
             throw err;
         }
