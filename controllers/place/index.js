@@ -130,7 +130,7 @@ function deletePlace(req, res) {
 }
 
 module.exports = function(app) {
-    app.get(prefix + '/list', listPlaces);
+    app.get(prefix, listPlaces);
     app.get(prefix + '/list/:userId', listUserPlaces);
     app.post(prefix, User.populateSession, User.requireRole('admin'), createPlace);
     app.put(prefix + '/:placeId', User.populateSession, User.requireRole('admin'), updatePlace);
