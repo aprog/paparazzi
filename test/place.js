@@ -24,7 +24,7 @@ describe('Place', function() {
     describe('#create()', function() {
         var randomCelebrity = null;
         it('should retrieve random user', function(done) {
-            request('http://localhost:3000/user/list', function(e, r, body) {
+            request('http://localhost:3000/user/', function(e, r, body) {
                 r.statusCode.should.equal(200);
                 body.should.not.be.empty;
                 var userList = JSON.parse(body);
@@ -38,7 +38,7 @@ describe('Place', function() {
         });
 
         it('should retrieve random celebrity', function(done) {
-            request('http://localhost:3000/celeb/list', function(e, r, body) {
+            request('http://localhost:3000/celeb', function(e, r, body) {
                 r.statusCode.should.equal(200);
                 body.should.not.be.empty;
                 var celebList = JSON.parse(body);
@@ -158,7 +158,7 @@ describe('Place', function() {
     describe('#update()', function() {
         var randomCelebrity = null;
         it('should retrieve random celebrity', function(done) {
-            request('http://localhost:3000/celeb/list', function(e, r, body) {
+            request('http://localhost:3000/celeb', function(e, r, body) {
                 r.statusCode.should.equal(200);
                 body.should.not.be.empty;
                 var celebList = JSON.parse(body);
@@ -212,7 +212,7 @@ describe('Place', function() {
 
     describe('#list()', function() {
         it('should retrieve list of places', function(done) {
-            request('http://localhost:3000/place/list', function(e, r, body) {
+            request('http://localhost:3000/place', function(e, r, body) {
                 r.statusCode.should.equal(200);
                 body.should.not.be.empty;
                 var placeList = JSON.parse(body);

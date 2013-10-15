@@ -18,7 +18,7 @@ describe('Wait for privileged user load', function() {
 describe('Celebrity', function() {
     describe('#list()', function() {
         it('should retrieve list of celebrities', function(done) {
-            request('http://localhost:3000/celeb/list', function(e, r, body) {
+            request('http://localhost:3000/celeb', function(e, r, body) {
                 r.statusCode.should.equal(200);
                 var parsedResponse = JSON.parse(body);
                 parsedResponse.should.be.an.instanceOf(Array);
