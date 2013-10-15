@@ -71,7 +71,7 @@ function deleteCeleb(req, res) {
 
 module.exports = function(app) {
     app.post(prefix, User.populateSession, User.requireRole('admin'), createCeleb);
-    app.get(prefix + '/list', listCelebs);
+    app.get(prefix, listCelebs);
     app.put(prefix + '/:celebId', User.populateSession, User.requireRole('admin'), updateCeleb);
     app.get(prefix + '/:celebId', showCeleb);
     app.del(prefix + '/:celebId', User.populateSession, User.requireRole('admin'), deleteCeleb);
