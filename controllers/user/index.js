@@ -130,7 +130,7 @@ function deleteUser(req, res) {
 
 module.exports = function(app) {
     app.post(prefix, User.populateSession, User.requireRole('admin'), createUser);
-    app.get(prefix + '/list', listUsers);
+    app.get(prefix, listUsers);
     app.get(prefix + '/getToken', getToken);
     app.post(prefix + '/logout', logoutUser);
     app.get(prefix + '/:userId', showUser);
