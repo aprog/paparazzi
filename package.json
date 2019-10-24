@@ -4,7 +4,7 @@
   "description": "Project for photographers and interesting people",
   "main": "index.js",
   "dependencies": {
-    "mongoose": "~3.6.0",
+    "mongoose": "~5.7.6",
     "express": "~3.1.0",
     "jade": "~0.28.2",
     "async": "~0.2.6",
